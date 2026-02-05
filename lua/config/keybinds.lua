@@ -14,8 +14,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
 
     vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-    
-    -- Enable the new native autocomplete (NVIM 0.11+)
-    -- vim.lsp.completion.enable(true, args.data.client_id, args.buf, { autotrigger = true })
+    -- Open a terminal at the bottom with 10 lines of height
+    vim.keymap.set('n', '<leader>tt', ':botright split | term<CR>a', { desc = 'Open Terminal' })
+
   end,
 })
