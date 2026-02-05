@@ -11,7 +11,7 @@ return {
       start_in_insert = true,
       insert_mappings = true,
       persist_size = true,
-      direction = 'horizontal', -- 'vertical' | 'horizontal' | 'window' | 'float'
+      direction = 'float', -- 'vertical' | 'horizontal' | 'window' | 'float'
       close_on_exit = true,
       shell = "fish",
       float_opts = {
