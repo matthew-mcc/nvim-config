@@ -209,8 +209,11 @@ local roslyn_handlers = {
   ["workspace/projectInitializationComplete"] = function(_, _, ctx)
     vim.notify("Roslyn project initialization complete", vim.log.levels.INFO)
 
-    local buffers = vim.lsp.get_buffers_by_client_id(ctx.client_id)
+    -- local buffers = vim.lsp.get_buffers_by_client_id(ctx.client_id)
+    -- local client = assert(vim.lsp.get_client_by_id(ctx.client_id))
+    
     local client = assert(vim.lsp.get_client_by_id(ctx.client_id))
+    local buffers = client.attached_buffers and vim.tbl_keys(client.attached_buffers) or {}
     local method = vim.lsp.protocol.Methods.textDocument_diagnostic
 
     if _G.nvim_unity_benchmark_roslyn_ls then
@@ -455,23 +458,34 @@ local roslyn_ls_config = {
   name = "roslyn_ls",
   offset_encoding = "utf-8",
   cmd = {
-    -- on Windows, you can simply directly call the executable:
-    --  "<roslyn_ls_path>/Microsoft.CodeAnalysis.LanguageServer.exe",
-    --  <roslyn-ls-path> is a placeholder for the path to the Roslyn LS dir
     "dotnet",
-    -- "<roslyn_ls_path>/Microsoft.CodeAnalysis.LanguageServer.dll",
-    
     "/home/matthew-mcc/.local/share/roslyn/content/LanguageServer/linux-x64/Microsoft.CodeAnalysis.LanguageServer.dll",
-
-    -- Critical|Debug|Error|Information|None|Trace|Warning
     "--logLevel=" .. lsp_log_lvl_to_roslyn_log_lvl[vim.lsp.log.get_level()],
-
-    -- here we supply same log path as the one used by current LSP client
-    -- (hence why we use - somewhat - the same log level)
-    "--extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.get_log_path()),
-
+    "--extensionLogDirectory",
+    vim.fs.dirname(vim.lsp.log.get_filename()),
     "--stdio",
   },
+  -- BELOW WAS DEPRECATED TO ENSURE THAT NEW FEDORA 44 (and software taht was updated) will work
+  -- cmd = {
+  --   -- on Windows, you can simply directly call the executable:
+  --   --  "<roslyn_ls_path>/Microsoft.CodeAnalysis.LanguageServer.exe",
+  --   --  <roslyn-ls-path> is a placeholder for the path to the Roslyn LS dir
+  --   "dotnet",
+  --   -- "<roslyn_ls_path>/Microsoft.CodeAnalysis.LanguageServer.dll",
+  --
+  --   "/home/matthew-mcc/.local/share/roslyn/content/LanguageServer/linux-x64/Microsoft.CodeAnalysis.LanguageServer.dll",
+  --
+  --   -- Critical|Debug|Error|Information|None|Trace|Warning
+  --   "--logLevel=" .. lsp_log_lvl_to_roslyn_log_lvl[vim.lsp.log.get_level()],
+  --
+  --   -- here we supply same log path as the one used by current LSP client
+  --   -- (hence why we use - somewhat - the same log level)
+  --   -- "--extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.get_log_path()),
+  --   -- "extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.log.get_filename()),
+  --   "extensionLogDirectory=", vim.fs.dirname(vim.lsp.log.get_filename()),
+  --
+  --   "--stdio",
+  -- },
   filetypes = { "cs" },
   handlers = roslyn_handlers,
   root_dir = project_root_dir_discovery,
